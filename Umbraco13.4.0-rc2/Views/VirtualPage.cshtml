@@ -1,0 +1,61 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.VirtualPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = null;
+}
+<h1>From dictionary: @Umbraco.GetDictionaryValue("What")</h1>
+<h2>Silly bug</h2>
+<p>This page is running in <b>@Model.GetCultureFromDomains()</b> according to @@Model.GetCultureFromDomains()
+    <br />
+    The previous header is a dictionary value from Umbraco. It should appear in the same language as the culture.
+    </p>
+
+
+
+<br />
+<a href="/silly">The same page is here, but routed through a IVirtualPageController</a>
+<hr />
+If you don't want to mess around with browsers to see the bug, try this: <br />
+
+<h2>Accept-Language header</h2>
+<input value="da-DK" />
+<button>fetch /silly</button>
+<br />
+<br />
+<textarea placeholder="result will appear here"></textarea>
+<hr />
+<input value="en-US" />
+<button>fetch /silly</button>
+<br />
+<br />
+<textarea placeholder="result will appear here"></textarea>
+<hr />
+<input value="something silly" />
+<button>fetch /silly</button>
+<br />
+<br />
+<textarea placeholder="result will appear here"></textarea>
+
+<script>
+	document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            console.log("hej")
+            const lang = btn.previousElementSibling.value;
+            const res = await fetch('/silly', {
+                method: 'POST',
+                headers: {
+                    'Accept-Language': lang
+                }
+            });
+            const data = await res.text();
+            btn.nextElementSibling.nextElementSibling.nextElementSibling.value = data;
+        });
+    });
+</script>
+<style>
+    textarea {
+        width: 100%;
+        min-height: 150px;
+    }
+</style>
